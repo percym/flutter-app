@@ -1,3 +1,4 @@
+import 'package:first_app/pages/auth.dart';
 import 'package:first_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.deepOrange
         ),
-        home:HomePage(),
+        home:AuthPage(),
     );
   }
 }
