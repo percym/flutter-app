@@ -1,26 +1,31 @@
-import 'package:first_app/pages/auth.dart';
-import 'package:first_app/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+// import 'package:flutter/rendering.dart';
 
-import 'product_manager.dart';
+import './pages/auth.dart';
+import './pages/products_admin.dart';
+import './pages/products.dart';
 
 void main() {
+  // debugPaintSizeEnabled = true;
+  // debugPaintBaselinesEnabled = true;
+  // debugPaintPointersEnabled = true;
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-//    debugPaintSizeEnabled = true;
-//    debugPaintBaselinesEnabled = true;
-
     return MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.deepOrange
-        ),
-        home:AuthPage(),
+      // debugShowMaterialGrid: true,
+      theme: ThemeData(
+          brightness: Brightness.light,
+          primarySwatch: Colors.deepOrange,
+          accentColor: Colors.deepPurple),
+      // home: AuthPage(),
+      routes: {
+        '/': (BuildContext context) => ProductsPage(),
+        '/admin': (BuildContext context) => ProductsAdminPage(),
+      },
     );
   }
 }
