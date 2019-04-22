@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import './products.dart';
-
 class AuthPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -20,47 +18,67 @@ class _AuthPageState extends State<AuthPage> {
         title: Text('Login'),
       ),
       body: Container(
-          margin: EdgeInsets.all(10.0),
-          child: ListView(
-            children: <Widget>[
-              TextField(
-                decoration: InputDecoration(labelText: 'E-Mail'),
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (String value) {
-                  setState(() {
-                    _emailValue = value;
-                  });
-                },
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                onChanged: (String value) {
-                  setState(() {
-                    _passwordValue = value;
-                  });
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              SwitchListTile(
-                value: _acceptTerms,
-                onChanged: (bool value) {
-                  setState(() {
-                    _acceptTerms = value;
-                  });
-                },
-                title: Text('Accept Terms'),
-              ),
-              RaisedButton(
-                child: Text('LOGIN'),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/');
-                },
-              ),
-            ],
-          )),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.5), BlendMode.dstATop),
+            image: AssetImage('assets/background.jpg'),
+          ),
+        ),
+        padding: EdgeInsets.all(10.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(
+                      labelText: 'E-Mail',
+                      filled: true,
+                      fillColor: Colors.white),
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (String value) {
+                    setState(() {
+                      _emailValue = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 10.0,),
+                TextField(
+                  decoration: InputDecoration(
+                      labelText: 'Password',
+                      filled: true,
+                      fillColor: Colors.white),
+                  obscureText: true,
+                  onChanged: (String value) {
+                    setState(() {
+                      _passwordValue = value;
+                    });
+                  },
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                SwitchListTile(
+                  value: _acceptTerms,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _acceptTerms = value;
+                    });
+                  },
+                  title: Text('Accept Terms'),
+                ),
+                RaisedButton(
+                  child: Text('LOGIN'),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, 'products');
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
