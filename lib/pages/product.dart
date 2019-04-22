@@ -34,29 +34,7 @@ class ProductPage extends StatelessWidget {
                 color: Theme.of(context).accentColor,
                 child: Text('DELETE'),
                 onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Are you sure'),
-                          content: Text('This adtion can not be undone'),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Cancel'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            FlatButton(
-                              child: Text('Continue'),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context, true);
-                              },
-                            )
-                          ],
-                        );
-                      });
+                  _showWarningDialog(context);
                 },
               ),
             )
@@ -64,5 +42,31 @@ class ProductPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _showWarningDialog( BuildContext context){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you sure'),
+            content: Text('This adtion can not be undone'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text('Continue'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          );
+        });
   }
 }
