@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 
-class ProductCreatePage extends StatefulWidget {
+class ProductEditPage extends StatefulWidget {
   final Function addProduct;
+  final Function updateProduct;
+  final Map<String, dynamic> product;
+  final int productIndex;
 
-  ProductCreatePage(this.addProduct);
+  ProductEditPage({this.addProduct, this.updateProduct, this.product , this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
-    return _ProductCreatePageState();
+    return _ProductEditPageState();
   }
 }
 
-class _ProductCreatePageState extends State<ProductCreatePage> {
-
+class _ProductEditPageState extends State<ProductEditPage> {
   final Map<String, dynamic> _formData = {
-    'title':null,
-    'description':null,
-    'price':null,
+    'title': null,
+    'description': null,
+    'price': null,
     'image': 'assets/food.jpg'
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -24,13 +26,14 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
   Widget _buildTitleTextField() {
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Title'),
+      initialValue: widget.product == null ? '' : widget.product['title'],
       validator: (String value) {
-        if (value.isEmpty || value.length > 5) {
+        if (value.isEmpty) {
           return 'Title is required and should be 5+ characters long';
         }
       },
       onSaved: (String value) {
-           _formData['title']= value;
+        _formData['title'] = value;
       },
     );
   }
@@ -38,9 +41,10 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
   Widget _buildDescriptionTextField() {
     return TextFormField(
       maxLines: 4,
+      initialValue: widget.product == null ? '' : widget.product['description'],
       decoration: InputDecoration(labelText: 'Product Description'),
       validator: (String value) {
-        if (value.isEmpty || value.length < 10) {
+        if (value.isEmpty ) {
           return 'Description is required and should be 5+ characters long';
         }
       },
@@ -53,6 +57,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
   Widget _buildPriceTextField() {
     return TextFormField(
       keyboardType: TextInputType.number,
+        initialValue: widget.product == null ? '' : widget.product['price'].toString(),
       decoration: InputDecoration(labelText: 'Product Price'),
       validator: (String value) {
         if (value.isEmpty) {
@@ -60,18 +65,22 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         }
       },
       onSaved: (String value) {
-        _formData['price']= double.parse(value);
+        _formData['price'] = double.parse(value);
       },
     );
   }
 
   void _submitForm() {
- //    _formKey.currentState.validate();
+    //    _formKey.currentState.validate();
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
-    widget.addProduct(_formData);
+    if(widget.product == null){
+      widget.addProduct(_formData);
+    }else{
+      widget.updateProduct(widget.productIndex , _formData);
+    }
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -80,8 +89,8 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 768.0 ? 500.0 : deviceWidth * 0.95;
     final double targetPadding = deviceWidth - targetWidth;
-    return GestureDetector(
-      onTap: (){
+    final Widget pageContent = GestureDetector(
+      onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Container(
@@ -108,5 +117,14 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         ),
       ),
     );
+
+    return widget.product == null
+        ? pageContent
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Edit product'),
+            ),
+            body: pageContent,
+          );
   }
 }
