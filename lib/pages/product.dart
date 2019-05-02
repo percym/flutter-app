@@ -12,7 +12,7 @@ class ProductPage extends StatelessWidget {
 
   ProductPage(this.productIndex);
 
-  Widget _buildAddressPriceRow() {
+  Widget _buildAddressPriceRow(Product product) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -59,7 +59,7 @@ class ProductPage extends StatelessWidget {
                   padding: EdgeInsets.all(10.0),
                   child: TitleDefault(product.title),
                 ),
-                _buildAddressPriceRow(),
+                _buildAddressPriceRow(product),
                 Container(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
