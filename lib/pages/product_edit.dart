@@ -1,7 +1,7 @@
 import 'package:first_app/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:first_app/scoped-models/product.dart';
+import 'package:first_app/scoped-models/main.dart';
 
 class ProductEditPage extends StatefulWidget {
   @override
@@ -67,14 +67,15 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
 
   Widget _buildSubmitButton() {
-    return ScopedModelDescendant<ProductsModel>(
-      builder: (BuildContext context, Widget child, ProductsModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return RaisedButton(
           child: Text('Save'),
           color: Theme.of(context).accentColor,
           textColor: Colors.white,
           onPressed: () {
-            _submitForm(model.addProduct, model.updateProduct, model.selectedProductIndex);
+            _submitForm(model.addProduct, model.updateProduct,
+                model.selectedProductIndex);
           },
         );
       },
@@ -89,18 +90,18 @@ class _ProductEditPageState extends State<ProductEditPage> {
     }
     _formKey.currentState.save();
     if (selectedProductIndex == null) {
-      addProduct(Product(
-          title: _formData['title'],
-          description: _formData['description'],
-          image: _formData['image'],
-          price: _formData['price']
-          ));
+      addProduct(
+        _formData['title'],
+        _formData['description'],
+        _formData['price'],
+        _formData['image'],
+      );
     } else {
       updateProduct(
-          Product(
-              title: _formData['title'],
-              description: _formData['description'],
-              price: double.parse(_formData['text'])));
+          _formData['title'],
+          _formData['description'],
+          _formData['price'],
+          _formData['image']);
     }
     Navigator.pushReplacementNamed(context, '/products');
   }
@@ -137,8 +138,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     final double targetWidth = deviceWidth > 768.0 ? 500.0 : deviceWidth * 0.95;
     final double targetPadding = deviceWidth - targetWidth;
 
-    return ScopedModelDescendant<ProductsModel>(
-      builder: (BuildContext context, Widget child, ProductsModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         final Widget pageContent =
             _buildPageContent(targetPadding, model.selectedProduct);
         return model.selectedProductIndex == null

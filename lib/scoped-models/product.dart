@@ -1,61 +1,59 @@
 import 'package:first_app/models/product.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:first_app/scoped-models/connected_products.dart';
 
-class ProductsModel extends Model {
-  List<Product> _products = [];
+class ProductsModel extends ConnectedProducts {
+
   bool _showFavourites= false;
 
-  int _selectedProductIndex;
-
-  List<Product> get products {
-    return List.from(_products);
+  List<Product> get allProducts {
+    return List.from(products);
   }
 
 
   List<Product> get displayedProducts {
     if(_showFavourites){
-      return List.from(_products.where((Product product)=>
+      return List.from(products.where((Product product)=>
         product.isFavourite).toList());
     }
-    return List.from(_products);
+    return List.from(products);
   }
 
-  void addProduct(Product product) {
-    _products.add(product);
-    _selectedProductIndex = null;
-  }
 
-  void updateProduct(Product product) {
-    _products[_selectedProductIndex] = product;
-    _selectedProductIndex = null;
+
+  void updateProduct(String title , String description , double price , String image ) {
+    final newProduct = Product(title: title, description: description , price: price , image:  image  , userEmail: authenticatedUser.email , userId: authenticatedUser.id );
+    products.add(newProduct);
+    selProductIndex = null;
   }
 
   void deleteProduct() {
-    _products.removeAt(_selectedProductIndex);
-    _selectedProductIndex = null;
+    products.removeAt(selectedProductIndex);
+    selProductIndex = null;
   }
 
   void selectProduct(int index) {
-    _selectedProductIndex = index;
+    selProductIndex = index;
     notifyListeners();
   }
 
   int get selectedProductIndex {
-    return _selectedProductIndex;
+    return selProductIndex;
   }
 
   void toggleProductIsFavoriteStatus() {
     final bool isCurrentlyFavourite =
-        _products[selectedProductIndex].isFavourite;
+        products[selectedProductIndex].isFavourite;
     final bool isNewFavouriteStatus = !isCurrentlyFavourite;
     final Product updateProduct = Product(
-        title: _products[selectedProductIndex].title,
-        description: _products[selectedProductIndex].description,
-        price: _products[selectedProductIndex].price,
-        image: _products[selectedProductIndex].image ,
-        isFavourite: isNewFavouriteStatus);
+        title: products[selectedProductIndex].title,
+        description: products[selectedProductIndex].description,
+        price: products[selectedProductIndex].price,
+        image: products[selectedProductIndex].image ,
+        isFavourite: isNewFavouriteStatus,
+        userEmail:products[selectedProductIndex].userEmail,
+        userId: products[selectedProductIndex].userId);
     products[selectedProductIndex] = updateProduct;
-    _selectedProductIndex = null;
+    selProductIndex = null;
     notifyListeners();
   }
 
@@ -74,4 +72,5 @@ class ProductsModel extends Model {
   bool get displayFavouritesOnly{
     return _showFavourites;
   }
+
 }

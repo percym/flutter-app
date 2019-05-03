@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:first_app/models/product.dart';
-import 'package:first_app/scoped-models/product.dart';
+import 'package:first_app/scoped-models/main.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/ui_elements/title_default.dart';
@@ -43,8 +43,8 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<ProductsModel>(
-        builder: (BuildContext context, Widget child, ProductsModel model) {
+      child: ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model) {
           Product product = model.products[productIndex];
 
           return Scaffold(
