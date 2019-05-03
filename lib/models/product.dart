@@ -12,5 +12,5 @@ class Product{
     @required this.description,
     @required this.price,
     @required this.image,
-    @required this.isFavourite =true});
+    @required this.isFavourite =false});
 }
