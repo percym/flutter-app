@@ -97,12 +97,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['description'],
         _formData['price'],
         _formData['image'],
-      );
+      ).then((_) => Navigator.pushReplacementNamed(context, '/products'));
     } else {
       updateProduct(_formData['title'], _formData['description'],
           _formData['price'], _formData['image']);
     }
-    Navigator.pushReplacementNamed(context, '/products');
+
   }
 
   Widget _buildPageContent(double targetPadding, Product product) {
