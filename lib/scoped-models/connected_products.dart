@@ -60,6 +60,11 @@ class ProductsModel extends ConnectedProducts {
       print(json.decode(response.body));
       final Map<String, dynamic> productListData =
           json.decode(response.body);
+      if(productListData == null){
+        _isLoading = false;
+        notifyListeners();
+        return ;
+      }
       productListData
           .forEach((String productId, dynamic productData) {
         final Product product = Product(
@@ -159,3 +164,4 @@ class UtilityModel extends ConnectedProducts{
     return _isLoading;
   }
 }
+
