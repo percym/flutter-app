@@ -8,9 +8,11 @@ class ConnectedProducts extends Model {
   List<Product> products = [];
   User authenticatedUser;
   int selProductIndex;
+  bool _isLoading = false;
 
   void addProduct(
       String title, String description, double price, String image) {
+    _isLoading = true;
     final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
@@ -36,6 +38,7 @@ class ConnectedProducts extends Model {
           userId: authenticatedUser.id);
       products.add(newProduct);
       notifyListeners();
+      _isLoading = false;
       selProductIndex = null;
     });
   }
@@ -49,6 +52,7 @@ class ProductsModel extends ConnectedProducts {
   }
 
   void fetchProducts() {
+    _isLoading = true;
     http
         .get('https://flutter-products-5186c.firebaseio.com/products.json')
         .then((http.Response response) {
@@ -69,6 +73,7 @@ class ProductsModel extends ConnectedProducts {
         fetchedProductList.add(product);
       });
       products = fetchedProductList;
+      _isLoading = false;
       notifyListeners();
     });
   }
@@ -140,10 +145,17 @@ class ProductsModel extends ConnectedProducts {
   bool get displayFavouritesOnly {
     return _showFavourites;
   }
+
 }
 
 class UserModel extends ConnectedProducts {
   void login(String email, String password) {
     authenticatedUser = User(id: '23', email: email, password: password);
+  }
+}
+
+class UtilityModel extends ConnectedProducts{
+  bool get isLoadingProducts{
+    return _isLoading;
   }
 }
