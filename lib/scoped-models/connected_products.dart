@@ -14,6 +14,7 @@ class ConnectedProducts extends Model {
   Future<Null> addProduct(
       String title, String description, double price, String image) {
     _isLoading = true;
+    notifyListeners();
     final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
@@ -54,6 +55,7 @@ class ProductsModel extends ConnectedProducts {
 
   void fetchProducts() {
     _isLoading = true;
+    notifyListeners();
     http
         .get('https://flutter-products-5186c.firebaseio.com/products.json')
         .then((http.Response response) {
@@ -92,9 +94,22 @@ class ProductsModel extends ConnectedProducts {
     return List.from(products);
   }
 
-  void updateProduct(
+  Future<Null> updateProduct(
       String title, String description, double price, String image) {
+    _isLoading =true;
+    notifyListeners();
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'price': price,
+      'image': 'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png',
+      'userEmail': authenticatedUser.email,
+      'userId': authenticatedUser.id
+    };
+    return http.put('https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json',body: json.encode(productData)).then((http.Response response){
+      _isLoading =false;
     final newProduct = Product(
+        id: selectedProduct.id,
         title: title,
         description: description,
         price: price,
@@ -103,6 +118,8 @@ class ProductsModel extends ConnectedProducts {
         userId: authenticatedUser.id);
     products.add(newProduct);
     selProductIndex = null;
+    notifyListeners();
+    });
   }
 
   void deleteProduct() {

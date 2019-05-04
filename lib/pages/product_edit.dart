@@ -15,7 +15,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'assets/food.jpg'
+    'image': 'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png'
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -70,7 +70,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
         return model.isLoadingProducts
-            ? CircularProgressIndicator()
+            ?Center(child: CircularProgressIndicator())
             : RaisedButton(
                 child: Text('Save'),
                 color: Theme.of(context).accentColor,
@@ -100,7 +100,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
       ).then((_) => Navigator.pushReplacementNamed(context, '/products'));
     } else {
       updateProduct(_formData['title'], _formData['description'],
-          _formData['price'], _formData['image']);
+          _formData['price'], _formData['image']).then((_) => Navigator.pushReplacementNamed(context, '/products'));
     }
 
   }
