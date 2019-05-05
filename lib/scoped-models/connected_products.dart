@@ -8,10 +8,10 @@ import 'dart:async';
 class ConnectedProducts extends Model {
   List<Product> products = [];
   User authenticatedUser;
-  int selProductIndex;
+  String selProductIndex;
   bool _isLoading = false;
 
-  Future<Null> addProduct(
+  Future<bool> addProduct(
       String title, String description, double price, String image) {
     _isLoading = true;
     notifyListeners();
@@ -28,6 +28,11 @@ class ConnectedProducts extends Model {
         .post('https://flutter-products-5186c.firebaseio.com/products.json',
             body: json.encode(productData))
         .then((http.Response resp) {
+          if(resp.statusCode != 200 || resp.statusCode != 201){
+            _isLoading = false;
+            notifyListeners();
+            return false;
+          }
       final Map<String, dynamic> respData = json.decode(resp.body);
       print(respData);
       final newProduct = Product(
@@ -42,13 +47,17 @@ class ConnectedProducts extends Model {
       notifyListeners();
       _isLoading = false;
       selProductIndex = null;
+      return true;
+    }).catchError((error){
+      _isLoading = false;
+      notifyListeners();
+      return false;
     });
   }
 }
 
 class ProductsModel extends ConnectedProducts {
   bool _showFavourites = false;
-
   List<Product> get allProducts {
     return List.from(products);
   }
@@ -59,6 +68,11 @@ class ProductsModel extends ConnectedProducts {
     http
         .get('https://flutter-products-5186c.firebaseio.com/products.json')
         .then((http.Response response) {
+      if(response.statusCode != 200 || response.statusCode != 201){
+        _isLoading = false;
+        notifyListeners();
+        return ;
+      }
       final List<Product> fetchedProductList = [];
       print(json.decode(response.body));
       final Map<String, dynamic> productListData =
@@ -83,6 +97,10 @@ class ProductsModel extends ConnectedProducts {
       products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
+    }).catchError((error){
+      _isLoading = false;
+      notifyListeners();
+      return ;
     });
   }
 
@@ -126,6 +144,9 @@ class ProductsModel extends ConnectedProducts {
     _isLoading = true;
     http.delete('https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json').then((http.Response response){
       _isLoading =false ;
+      final int selectedProductIndex = products.indexWhere((Product product){
+        return product.id == selectedProduct.id;
+      });
       products.removeAt(selectedProductIndex);
       selProductIndex = null;
       notifyListeners();
@@ -133,37 +154,43 @@ class ProductsModel extends ConnectedProducts {
 
   }
 
-  void selectProduct(int index) {
+  void selectProduct(String index) {
     selProductIndex = index;
     notifyListeners();
   }
 
-  int get selectedProductIndex {
+  String get selectedProductIndex {
     return selProductIndex;
   }
 
   void toggleProductIsFavoriteStatus() {
     final bool isCurrentlyFavourite =
-        products[selectedProductIndex].isFavourite;
+        selectedProduct.isFavourite;
     final bool isNewFavouriteStatus = !isCurrentlyFavourite;
     final Product updateProduct = Product(
-        title: products[selectedProductIndex].title,
-        description: products[selectedProductIndex].description,
-        price: products[selectedProductIndex].price,
-        image: products[selectedProductIndex].image,
+        id: selectedProduct.id ,
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
         isFavourite: isNewFavouriteStatus,
-        userEmail: products[selectedProductIndex].userEmail,
-        userId: products[selectedProductIndex].userId);
-    products[selectedProductIndex] = updateProduct;
-    selProductIndex = null;
-    notifyListeners();
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId);
+    final int selectedProductIndex = products.indexWhere((Product product){
+          return product.id == selectedProduct.id;
+        });
+        products[selectedProductIndex] = updateProduct;
+        selProductIndex = null;
+        notifyListeners();
   }
 
   Product get selectedProduct {
     if (selectedProductIndex == null) {
       return null;
     }
-    return products[selectedProductIndex];
+    return products.firstWhere((Product product){
+      return product.id == selectedProductIndex;
+    });
   }
 
   void toggleDisplayMode() {

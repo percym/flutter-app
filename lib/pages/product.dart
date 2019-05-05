@@ -8,10 +8,6 @@ import '../widgets/ui_elements/title_default.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class ProductPage extends StatelessWidget {
-  final int productIndex;
-
-  ProductPage(this.productIndex);
-
   Widget _buildAddressPriceRow(Product product) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +41,7 @@ class ProductPage extends StatelessWidget {
       },
       child: ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
-          Product product = model.products[productIndex];
+          Product product = model.selectedProduct;
 
           return Scaffold(
             appBar: AppBar(

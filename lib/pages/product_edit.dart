@@ -15,7 +15,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png'
+    'image':
+        'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png'
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -70,7 +71,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
         return model.isLoadingProducts
-            ?Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : RaisedButton(
                 child: Text('Save'),
                 color: Theme.of(context).accentColor,
@@ -85,7 +86,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
 
   void _submitForm(Function addProduct, Function updateProduct,
-      [int selectedProductIndex]) {
+      [String selectedProductIndex]) {
     //    _formKey.currentState.validate();
     if (!_formKey.currentState.validate()) {
       return;
@@ -97,12 +98,32 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['description'],
         _formData['price'],
         _formData['image'],
-      ).then((_) => Navigator.pushReplacementNamed(context, '/products'));
+      ).then((bool success) {
+        if (success) {
+          Navigator.pushReplacementNamed(context, '/products');
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Something went wrong'),
+                  content: Text('Please try again'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              }
+          );
+        }
+      });
     } else {
       updateProduct(_formData['title'], _formData['description'],
-          _formData['price'], _formData['image']).then((_) => Navigator.pushReplacementNamed(context, '/products'));
+              _formData['price'], _formData['image'])
+          .then((_) => Navigator.pushReplacementNamed(context, '/products'));
     }
-
   }
 
   Widget _buildPageContent(double targetPadding, Product product) {
