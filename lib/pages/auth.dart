@@ -87,11 +87,25 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login) {
-    print(_formData['email']);
-    print(_formData['password']);
-    login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/products');
+  void _submitForm(Function login, Function signUp) async {
+    if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
+      return;
+    }
+    _formKey.currentState.save();
+    _formKey.currentState.save();
+    if (_authMode == AuthMode.Login) {
+      print(_formData['email']);
+      print(_formData['password']);
+      login(_formData['email'], _formData['password']);
+    } else {
+      print(_formData['email']);
+      print(_formData['password']);
+      final Map<String, dynamic> successInformation =
+          await signUp(_formData['email'], _formData['password']);
+      if (successInformation['success']) {
+        Navigator.pushReplacementNamed(context, '/products');
+      }
+    }
   }
 
   @override
@@ -111,44 +125,50 @@ class _AuthPageState extends State<AuthPage> {
           child: SingleChildScrollView(
             child: Container(
               width: targetWidth,
-              child: Column(
-                children: <Widget>[
-                  _buildEmailTextField(),
-                  SizedBox(
-                    height: 10.9,
-                  ),
-                  _buildPasswordTextField(),
-                  _authMode == AuthMode.SignUp?_buildPassWordConfirmTextField():Container(),
-                  _buildAcceptSwitch(),
-                  SizedBox(
-                    height: 10.9,
-                  ),
-                  FlatButton(
-                    child: Text(
-                        'Switch to ${_authMode == AuthMode.Login ? 'SignUp' : 'Login'}'),
-                    onPressed: () {
-                      setState(() {
-                        _authMode = _authMode == AuthMode.Login
-                            ? AuthMode.SignUp
-                            : AuthMode.Login;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  ScopedModelDescendant<MainModel>(
-                    builder:
-                        (BuildContext context, Widget child, MainModel model) {
-                      return RaisedButton(
-                        color: Theme.of(context).primaryColor,
-                        textColor: Colors.white,
-                        child: Text('LOGIN'),
-                        onPressed: () => _submitForm(model.login),
-                      );
-                    },
-                  )
-                ],
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    _buildEmailTextField(),
+                    SizedBox(
+                      height: 10.9,
+                    ),
+                    _buildPasswordTextField(),
+                    _authMode == AuthMode.SignUp
+                        ? _buildPassWordConfirmTextField()
+                        : Container(),
+                    _buildAcceptSwitch(),
+                    SizedBox(
+                      height: 10.9,
+                    ),
+                    FlatButton(
+                      child: Text(
+                          'Switch to ${_authMode == AuthMode.Login ? 'SignUp' : 'Login'}'),
+                      onPressed: () {
+                        setState(() {
+                          _authMode = _authMode == AuthMode.Login
+                              ? AuthMode.SignUp
+                              : AuthMode.Login;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    ScopedModelDescendant<MainModel>(
+                      builder: (BuildContext context, Widget child,
+                          MainModel model) {
+                        return RaisedButton(
+                          color: Theme.of(context).primaryColor,
+                          textColor: Colors.white,
+                          child: Text('LOGIN'),
+                          onPressed: () =>
+                              _submitForm(model.login, model.signUp),
+                        );
+                      },
+                    )
+                  ],
+                ),
               ),
             ),
           ),
