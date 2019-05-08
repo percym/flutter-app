@@ -220,9 +220,18 @@ class UserModel extends ConnectedProducts {
       'email':email,
       'password':password
     };
-    final http.Response response = await http.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyBjRbkwezLBR-nK2LZsFySMbBWwZIYLUwM' , body: json.encode(authData));
+    final http.Response response = await http.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyBjRbkwezLBR-nK2LZsFySMbBWwZIYLUwM' , body: json.encode(authData),headers: {'ContentType': 'application/json'});
     print(json.decode(response.body));
-    return { 'success':true , 'message':'Authentication succeeded'} ;
+    final Map<String, dynamic> responseDecoded = json.decode(response.body);
+    bool hasError =true;
+    var message = 'An error occured';
+    if(responseDecoded.containsKey('idToken')){
+      hasError =false;
+      message = 'Authentication Succeeded';
+    }else if (responseDecoded['error']['message']== 'EMAIL_EXISTS'){
+      message = 'Email already exists';
+    }
+    return { 'success':!hasError , 'message':message} ;
 
   }
 }
