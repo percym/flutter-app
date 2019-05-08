@@ -72,13 +72,17 @@ class _AuthPageState extends State<AuthPage> {
                     ScopedModelDescendant<MainModel>(
                       builder: (BuildContext context, Widget child,
                           MainModel model) {
-                        return RaisedButton(
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                          child: Text('LOGIN'),
-                          onPressed: () =>
-                              _submitForm(model.login, model.signUp),
-                        );
+                        return model.isLoadingProducts
+                            ? CircularProgressIndicator()
+                            : RaisedButton(
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                child: Text(_authMode == AuthMode.Login
+                                    ? 'LOGIN'
+                                    : 'SIGN UP'),
+                                onPressed: () =>
+                                    _submitForm(model.login, model.signUp),
+                              );
                       },
                     )
                   ],
@@ -173,18 +177,22 @@ class _AuthPageState extends State<AuthPage> {
       if (successInformation['success']) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {
-        showDialog(context: context,builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text( 'An error occured'),
-            content: Text(successInformation['message']),
-            actions: <Widget>[
-              FlatButton(child: Text('Close'),
-              onPressed: (){
-                Navigator.of(context).pop();
-              },)
-            ],
-          );
-        });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('An error occured'),
+                content: Text(successInformation['message']),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Close'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
       }
     }
   }
