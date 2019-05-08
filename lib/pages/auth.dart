@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:first_app/main.dart';
 
+enum AuthMode { SignUp, Login }
+
 class AuthPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -11,9 +13,14 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _emailValue;
-  String _passwordValue;
-  bool _acceptTerms = false;
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'acceptTerms': false
+  };
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordTextController = TextEditingController();
+  AuthMode _authMode = AuthMode.Login;
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -25,14 +32,31 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
+//      controller: _emailTextController,
       decoration: InputDecoration(
           labelText: 'E-Mail', filled: true, fillColor: Colors.white),
       keyboardType: TextInputType.emailAddress,
-      onChanged: (String value) {
+      onSaved: (String value) {
         setState(() {
-          _emailValue = value;
+          _formData['email'] = value;
         });
+      },
+    );
+  }
+
+  Widget _buildPassWordConfirmTextField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Confirm password',
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      obscureText: true,
+      validator: (String value) {
+        if (_passwordTextController.text != value) {
+          return 'please ensure passwords are the same';
+        }
       },
     );
   }
@@ -41,10 +65,11 @@ class _AuthPageState extends State<AuthPage> {
     return TextField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: Colors.white),
+      controller: _passwordTextController,
       obscureText: true,
       onChanged: (String value) {
         setState(() {
-          _passwordValue = value;
+          _formData['password'] = value;
         });
       },
     );
@@ -52,10 +77,10 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
-      value: _acceptTerms,
+      value: _formData['acceptTerms'],
       onChanged: (bool value) {
         setState(() {
-          _acceptTerms = value;
+          _formData['acceptTerms'] = value;
         });
       },
       title: Text('Accept Terms'),
@@ -63,9 +88,9 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void _submitForm(Function login) {
-    print(_emailValue);
-    print(_passwordValue);
-    login(_emailValue,_passwordValue);
+    print(_formData['email']);
+    print(_formData['password']);
+    login(_formData['email'], _formData['password']);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -93,7 +118,22 @@ class _AuthPageState extends State<AuthPage> {
                     height: 10.9,
                   ),
                   _buildPasswordTextField(),
+                  _authMode == AuthMode.SignUp?_buildPassWordConfirmTextField():Container(),
                   _buildAcceptSwitch(),
+                  SizedBox(
+                    height: 10.9,
+                  ),
+                  FlatButton(
+                    child: Text(
+                        'Switch to ${_authMode == AuthMode.Login ? 'SignUp' : 'Login'}'),
+                    onPressed: () {
+                      setState(() {
+                        _authMode = _authMode == AuthMode.Login
+                            ? AuthMode.SignUp
+                            : AuthMode.Login;
+                      });
+                    },
+                  ),
                   SizedBox(
                     height: 10.0,
                   ),
@@ -104,7 +144,7 @@ class _AuthPageState extends State<AuthPage> {
                         color: Theme.of(context).primaryColor,
                         textColor: Colors.white,
                         child: Text('LOGIN'),
-                        onPressed:() => _submitForm(model.login),
+                        onPressed: () => _submitForm(model.login),
                       );
                     },
                   )
