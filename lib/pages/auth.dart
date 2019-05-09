@@ -2,8 +2,7 @@ import 'package:first_app/main.dart';
 import 'package:first_app/scoped-models/main.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-
-enum AuthMode { SignUp, Login }
+import 'package:first_app/models/auth.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -81,7 +80,7 @@ class _AuthPageState extends State<AuthPage> {
                                     ? 'LOGIN'
                                     : 'SIGN UP'),
                                 onPressed: () =>
-                                    _submitForm(model.login, model.signUp),
+                                    _submitForm(model.authenticate)
                               );
                       },
                     )
@@ -160,7 +159,7 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login, Function signUp) async {
+  void _submitForm(Function authenticate) async {
     if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
       return;
     }
@@ -169,7 +168,7 @@ class _AuthPageState extends State<AuthPage> {
       print(_formData['email']);
       print(_formData['password']);
       print(_formData['password']);
-      final Map<String, dynamic> successInformation = await login(_formData['email'], _formData['password']);
+      final Map<String, dynamic> successInformation = await authenticate(_formData['email'], _formData['password']);
       if (successInformation['success']) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {
@@ -195,7 +194,7 @@ class _AuthPageState extends State<AuthPage> {
       print(_formData['email']);
       print(_formData['password']);
       final Map<String, dynamic> successInformation =
-          await signUp(_formData['email'], _formData['password']);
+          await authenticate(_formData['email'], _formData['password'],_authMode);
       if (successInformation['success']) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {

@@ -1,3 +1,4 @@
+import 'package:first_app/models/auth.dart';
 import 'package:first_app/models/product.dart';
 import 'package:first_app/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -212,7 +213,7 @@ class ProductsModel extends ConnectedProducts {
 
 class UserModel extends ConnectedProducts {
 
-  Future<Map<String,dynamic>> login(String email, String password)  async{
+  Future<Map<String,dynamic>> authenticate(String email, String password , [AuthMode mode = AuthMode.Login])  async{
     _isLoading = true;
     notifyListeners();
     final Map<String , dynamic> authData = {
@@ -220,7 +221,17 @@ class UserModel extends ConnectedProducts {
       'password':password,
       'returnSecureToken':true
     };
-    final http.Response response = await http.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyBjRbkwezLBR-nK2LZsFySMbBWwZIYLUwM', body: json.encode(authData) , headers: {'Content-Type':'application/json'});
+     http.Response response;
+    if(mode == AuthMode.Login) {
+      response = await http.post(
+          'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyBjRbkwezLBR-nK2LZsFySMbBWwZIYLUwM',
+          body: json.encode(authData),
+          headers: {'Content-Type': 'application/json'});
+    }else{
+      response = await http.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyBjRbkwezLBR-nK2LZsFySMbBWwZIYLUwM' , body: json.encode(authData),headers: {'ContentType': 'application/json'});
+      print(json.decode(response.body));
+      final Map<String, dynamic> responseDecoded = json.decode(response.body);
+    }
     final Map<String, dynamic> responseDecoded = json.decode(response.body);
     bool hasError =true;
     var message = 'An error occured';
@@ -231,6 +242,8 @@ class UserModel extends ConnectedProducts {
       message = 'Email not found';
     }else if (responseDecoded['error']['message']== 'INVALID_PASSWORD'){
       message = 'Invalid password';
+    }else if (responseDecoded['error']['message']== 'EMAIL_EXISTS'){
+      message = 'Email already exists';
     }
     _isLoading =false;
     notifyListeners();
