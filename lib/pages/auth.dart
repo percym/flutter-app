@@ -168,7 +168,29 @@ class _AuthPageState extends State<AuthPage> {
     if (_authMode == AuthMode.Login) {
       print(_formData['email']);
       print(_formData['password']);
-      login(_formData['email'], _formData['password']);
+      print(_formData['password']);
+      final Map<String, dynamic> successInformation = await login(_formData['email'], _formData['password']);
+      if (successInformation['success']) {
+        Navigator.pushReplacementNamed(context, '/products');
+      } else {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('An error occured'),
+                content: Text(successInformation['message']),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Close'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
+      }
+
     } else {
       print(_formData['email']);
       print(_formData['password']);
@@ -194,6 +216,28 @@ class _AuthPageState extends State<AuthPage> {
               );
             });
       }
+    }
+  }
+  void _buildDialogue(bool success ,String message){
+    if (success) {
+      Navigator.pushReplacementNamed(context, '/products');
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('An error occured'),
+              content: Text(message),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
     }
   }
 }
