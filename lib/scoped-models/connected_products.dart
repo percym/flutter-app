@@ -5,10 +5,11 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnectedProducts extends Model {
   List<Product> products = [];
-  User authenticatedUser;
+  User _authenticatedUser;
   String selProductIndex;
   bool _isLoading = false;
 
@@ -22,12 +23,12 @@ class ConnectedProducts extends Model {
       'price': price,
       'image':
       'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png',
-      'userEmail': authenticatedUser.email,
-      'userId': authenticatedUser.id
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
     try {
       final http.Response response = await http.post(
-          'https://flutter-products-5186c.firebaseio.com/products.json',
+          'https://flutter-products-5186c.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
           body: json.encode(productData));
 
       if (response.statusCode != 200 && response.statusCode != 201) {
@@ -43,8 +44,8 @@ class ConnectedProducts extends Model {
           description: description,
           price: price,
           image: image,
-          userEmail: authenticatedUser.email,
-          userId: authenticatedUser.id);
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
       products.add(newProduct);
       notifyListeners();
       _isLoading = false;
@@ -67,7 +68,7 @@ class ProductsModel extends ConnectedProducts {
   Future<bool> fetchProducts() {
     _isLoading = true;
     return http
-        .get('https://flutter-products-5186c.firebaseio.com/products.json')
+        .get('https://flutter-products-5186c.firebaseio.com/products.json?auth=${_authenticatedUser.token}')
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
@@ -122,12 +123,12 @@ class ProductsModel extends ConnectedProducts {
       'price': price,
       'image':
           'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png',
-      'userEmail': authenticatedUser.email,
-      'userId': authenticatedUser.id
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
     return http
         .put(
-            'https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json',
+            'https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json?auth=${_authenticatedUser.token}',
             body: json.encode(productData))
         .then((http.Response response) {
       _isLoading = false;
@@ -137,8 +138,8 @@ class ProductsModel extends ConnectedProducts {
           description: description,
           price: price,
           image: image,
-          userEmail: authenticatedUser.email,
-          userId: authenticatedUser.id);
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
       products.add(newProduct);
       selProductIndex = null;
       notifyListeners();
@@ -150,7 +151,7 @@ class ProductsModel extends ConnectedProducts {
     _isLoading = true;
     return http
         .delete(
-            'https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json')
+            'https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}.json?auth=${_authenticatedUser.token}')
         .then((http.Response response) {
       _isLoading = false;
       final int selectedProductIndex = products.indexWhere((Product product) {
@@ -213,6 +214,10 @@ class ProductsModel extends ConnectedProducts {
 
 class UserModel extends ConnectedProducts {
 
+  User get user{
+    return _authenticatedUser;
+  }
+
   Future<Map<String,dynamic>> authenticate(String email, String password , [AuthMode mode = AuthMode.Login])  async{
     _isLoading = true;
     notifyListeners();
@@ -238,6 +243,15 @@ class UserModel extends ConnectedProducts {
     if(responseDecoded.containsKey('idToken')){
       hasError =false;
       message = 'Authentication Succeeded';
+      _authenticatedUser = User(
+          id: responseDecoded['localId'] ,
+          email: email ,
+          token: responseDecoded['idToken']
+      );
+     final SharedPreferences prefs =await SharedPreferences.getInstance();
+     prefs.setString('token', responseDecoded['idToken']);
+     prefs.setString('userEmail',email);
+     prefs.setString('userId', responseDecoded['localId']);
     }else if (responseDecoded['error']['message']== 'EMAIL_NOT_FOUND'){
       message = 'Email not found';
     }else if (responseDecoded['error']['message']== 'INVALID_PASSWORD'){
@@ -274,6 +288,18 @@ class UserModel extends ConnectedProducts {
     notifyListeners();
     return { 'success':!hasError , 'message':message} ;
 
+  }
+
+  void  autoAuthenticate() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String  token = prefs.get('token');
+
+    if(token != null){
+      String userEmail = prefs.getString('userEmail');
+      String userId = prefs.getString('userId');
+      _authenticatedUser = User(id:userId , email: userEmail , token: token);
+    notifyListeners();
+    }
   }
 }
 
