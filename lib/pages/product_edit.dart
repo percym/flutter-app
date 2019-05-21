@@ -93,11 +93,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
     }
     _formKey.currentState.save();
     if (selectedProductIndex == null) {
-      addProduct(
+      addProduct  (
         _formData['title'],
         _formData['description'],
-        _formData['price'],
         _formData['image'],
+        _formData['price'],
       ).then((bool success) {
         if (success) {
           Navigator.pushReplacementNamed(context, '/products');

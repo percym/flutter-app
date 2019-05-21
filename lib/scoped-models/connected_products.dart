@@ -70,7 +70,7 @@ class ProductsModel extends ConnectedProductsModel {
     };
     try {
       final http.Response response = await http.post(
-          'https://flutter-products.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
+          'https://flutter-products-5186c.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
           body: json.encode(productData));
 
       if (response.statusCode != 200 && response.statusCode != 201) {
@@ -160,7 +160,7 @@ class ProductsModel extends ConnectedProductsModel {
     });
   }
 
-  Future<Null> fetchProducts() {
+  Future<Null> fetchProducts({onlyForUser =false}) {
     _isLoading = true;
     notifyListeners();
     return http
@@ -187,7 +187,9 @@ class ProductsModel extends ConnectedProductsModel {
                 .containsKey(_authenticatedUser.id));
         fetchedProductList.add(product);
       });
-      _products = fetchedProductList;
+      _products = fetchedProductList.where((Product product){
+        return product.userId == _authenticatedUser.id;
+      }).toList();
       _isLoading = false;
       notifyListeners();
       _selProductId = null;
