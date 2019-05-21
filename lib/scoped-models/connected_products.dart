@@ -3,6 +3,7 @@ import 'package:first_app/models/product.dart';
 import 'package:first_app/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:rxdart/subjects.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -213,9 +214,15 @@ class ProductsModel extends ConnectedProducts {
 }
 
 class UserModel extends ConnectedProducts {
+Timer  _authtimer;
+PublishSubject<bool> _userSubject =PublishSubject();
 
   User get user{
     return _authenticatedUser;
+  }
+
+  PublishSubject<bool> get userSubject{
+    return _userSubject;
   }
 
   Future<Map<String,dynamic>> authenticate(String email, String password , [AuthMode mode = AuthMode.Login])  async{
@@ -248,10 +255,14 @@ class UserModel extends ConnectedProducts {
           email: email ,
           token: responseDecoded['idToken']
       );
+      final DateTime now = DateTime.now();
+      final DateTime expiryTime = now.add(Duration(seconds: int.parse(responseDecoded['expiresIn'])));
+      setAuthTimeOut(int.parse(responseDecoded['expiresIn']));
      final SharedPreferences prefs =await SharedPreferences.getInstance();
      prefs.setString('token', responseDecoded['idToken']);
      prefs.setString('userEmail',email);
      prefs.setString('userId', responseDecoded['localId']);
+     prefs.setString('expiryTime', expiryTime.toIso8601String());
     }else if (responseDecoded['error']['message']== 'EMAIL_NOT_FOUND'){
       message = 'Email not found';
     }else if (responseDecoded['error']['message']== 'INVALID_PASSWORD'){
@@ -293,23 +304,42 @@ class UserModel extends ConnectedProducts {
   void  autoAuthenticate() async{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String  token = prefs.get('token');
+    final String expiryTimeString = prefs.get('expiryTime');
 
     if(token != null){
+      final DateTime now = DateTime.now();
+      final parsedExpiryTime = DateTime.parse(expiryTimeString);
+      if(parsedExpiryTime.isBefore(now)){
+        _authenticatedUser =null;
+        notifyListeners();
+        return;
+      }
       String userEmail = prefs.getString('userEmail');
       String userId = prefs.getString('userId');
+      final int tokenLifeSpan = parsedExpiryTime.difference(now).inSeconds;
       _authenticatedUser = User(id:userId , email: userEmail , token: token);
+      setAuthTimeOut(tokenLifeSpan);
+      _userSubject.add(true);
     notifyListeners();
     }
   }
   
   void logout() async{
+    print('logout');
     _authenticatedUser = null;
+    _authtimer.cancel();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
     prefs.remove('userId');
 
+  }
 
+  void setAuthTimeOut(int time){
+   _authtimer= Timer(Duration(milliseconds: time * 5),(){
+      logout();
+      _userSubject.add(false);
+    });
   }
 }
 
