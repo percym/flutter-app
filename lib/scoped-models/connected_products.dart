@@ -174,9 +174,20 @@ class ProductsModel extends ConnectedProducts {
     return selProductIndex;
   }
 
-  void toggleProductIsFavoriteStatus() {
+
+
+  void toggleProductIsFavoriteStatus() async {
     final bool isCurrentlyFavourite = selectedProduct.isFavourite;
     final bool isNewFavouriteStatus = !isCurrentlyFavourite;
+    if(isNewFavouriteStatus){
+     final http.Response response = await http.put('https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}/wishList/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',body: json.encode(true));
+     if(response.statusCode !=200 && response.statusCode != 201){
+
+     }
+    }else{
+      await http.delete('https://flutter-products-5186c.firebaseio.com/products/${selectedProduct.id}/wishList/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}');
+    }
+
     final Product updateProduct = Product(
         id: selectedProduct.id,
         title: selectedProduct.title,
@@ -186,6 +197,7 @@ class ProductsModel extends ConnectedProducts {
         isFavourite: isNewFavouriteStatus,
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId);
+//       selectedProduct =updateProduct;
     final int selectedProductIndex = products.indexWhere((Product product) {
       return product.id == selectedProduct.id;
     });
@@ -196,6 +208,7 @@ class ProductsModel extends ConnectedProducts {
 
   Product get selectedProduct {
     if (selectedProductIndex == null) {
+
       return null;
     }
     return products.firstWhere((Product product) {

@@ -65,6 +65,7 @@ class _MyAppState extends State<MyApp> {
             return null;
           }
           if (pathElements[1] == 'product') {
+            print(pathElements);
             final String productId = pathElements[2];
             _model.selectProduct(productId);
             return MaterialPageRoute<bool>(
