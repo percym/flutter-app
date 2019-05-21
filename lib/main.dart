@@ -52,9 +52,14 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (BuildContext context) => !_isAuthenticated ? AuthPage() : ProductsPage(_model),
 //          '/products': (BuildContext context) => ProductsPage(_model),
-          '/admin': (BuildContext context) => ProductsAdminPage(_model),
+          '/admin': (BuildContext context) => !_isAuthenticated ? AuthPage() : ProductsAdminPage(_model),
         },
         onGenerateRoute: (RouteSettings settings) {
+          if(!_isAuthenticated){
+            return MaterialPageRoute<bool>(
+              builder: (BuildContext context) =>AuthPage(),
+            );
+          }
           final List<String> pathElements = settings.name.split('/');
           if (pathElements[0] != '') {
             return null;
@@ -64,14 +69,14 @@ class _MyAppState extends State<MyApp> {
             _model.selectProduct(productId);
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) =>
-                  ProductPage(),
+              !_isAuthenticated ? AuthPage() :ProductPage(),
             );
           }
           return null;
         },
         onUnknownRoute: (RouteSettings settings) {
           return MaterialPageRoute(
-              builder: (BuildContext context) => ProductsPage(_model));
+              builder: (BuildContext context) =>!_isAuthenticated ? AuthPage() : ProductsPage(_model));
         },
       ),
     );

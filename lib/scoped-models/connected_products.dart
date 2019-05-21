@@ -333,13 +333,13 @@ PublishSubject<bool> _userSubject =PublishSubject();
     prefs.remove('token');
     prefs.remove('userEmail');
     prefs.remove('userId');
+    _userSubject.add(false);
 
   }
 
   void setAuthTimeOut(int time){
-   _authTimer= Timer(Duration(milliseconds: time * 5),(){
+   _authTimer= Timer(Duration(seconds: time),(){
       logout();
-      _userSubject.add(false);
     });
   }
 }
