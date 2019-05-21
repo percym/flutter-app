@@ -70,7 +70,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
   Widget _buildSubmitButton() {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return model.isLoadingProducts
+        return model.isLoading
             ? Center(child: CircularProgressIndicator())
             : RaisedButton(
                 child: Text('Save'),
@@ -78,7 +78,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                 textColor: Colors.white,
                 onPressed: () {
                   _submitForm(model.addProduct, model.updateProduct,
-                      model.selectedProductIndex);
+                      model.selectedProductId);
                 },
               );
       },

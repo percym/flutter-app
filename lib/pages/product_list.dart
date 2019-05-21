@@ -29,7 +29,7 @@ class _ProductListPageState extends State<ProductListPage>{
               key: Key(model.allProducts[index].title),
               onDismissed: (DismissDirection direction) {
                 if (direction == DismissDirection.endToStart) {
-                  model.selectProduct(model.selectedProductIndex);
+                  model.selectProduct(model.selectedProductId);
                   model.deleteProduct();
                 } else if (direction == DismissDirection.startToEnd) {
                   print('startToEnd');
@@ -43,7 +43,7 @@ class _ProductListPageState extends State<ProductListPage>{
                   ListTile(
                     leading: CircleAvatar(
 
-                      child:Image.network(model.products[index].image),
+                      child:Image.network(model.selectedProduct.image),
                     ),
                     title: Text(model.allProducts[index].title),
                     subtitle: Text('\$${model.allProducts[index].price}'),
@@ -65,7 +65,7 @@ class _ProductListPageState extends State<ProductListPage>{
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
-        model.selectProduct(model.selectedProductIndex);
+        model.selectProduct(model.selectedProductId);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {
