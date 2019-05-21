@@ -170,7 +170,7 @@ class _AuthPageState extends State<AuthPage> {
       print(_formData['password']);
       final Map<String, dynamic> successInformation = await authenticate(_formData['email'], _formData['password']);
       if (successInformation['success']) {
-        Navigator.pushReplacementNamed(context, '/products');
+//        Navigator.pushReplacementNamed(context, '/products');
       } else {
         showDialog(
             context: context,

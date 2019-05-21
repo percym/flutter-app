@@ -214,7 +214,7 @@ class ProductsModel extends ConnectedProducts {
 }
 
 class UserModel extends ConnectedProducts {
-Timer  _authtimer;
+Timer  _authTimer;
 PublishSubject<bool> _userSubject =PublishSubject();
 
   User get user{
@@ -258,6 +258,7 @@ PublishSubject<bool> _userSubject =PublishSubject();
       final DateTime now = DateTime.now();
       final DateTime expiryTime = now.add(Duration(seconds: int.parse(responseDecoded['expiresIn'])));
       setAuthTimeOut(int.parse(responseDecoded['expiresIn']));
+      _userSubject.add(true);
      final SharedPreferences prefs =await SharedPreferences.getInstance();
      prefs.setString('token', responseDecoded['idToken']);
      prefs.setString('userEmail',email);
@@ -327,7 +328,7 @@ PublishSubject<bool> _userSubject =PublishSubject();
   void logout() async{
     print('logout');
     _authenticatedUser = null;
-    _authtimer.cancel();
+    _authTimer.cancel();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
@@ -336,7 +337,7 @@ PublishSubject<bool> _userSubject =PublishSubject();
   }
 
   void setAuthTimeOut(int time){
-   _authtimer= Timer(Duration(milliseconds: time * 5),(){
+   _authTimer= Timer(Duration(milliseconds: time * 5),(){
       logout();
       _userSubject.add(false);
     });
