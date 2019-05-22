@@ -7,12 +7,14 @@ import './pages/products_admin.dart';
 import './pages/products.dart';
 import './pages/product.dart';
 import 'package:first_app/scoped-models/main.dart';
+import 'package:map_view/map_view.dart';
 
 
 void main() {
   // debugPaintSizeEnabled = true;
   // debugPaintBaselinesEnabled = true;
   // debugPaintPointersEnabled = true;
+  MapView.setApiKey('AIzaSyBOjjRVB8_EOePWOdcjTVOAScW7dGSlLI0');
   runApp(MyApp());
 }
 
