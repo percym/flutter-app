@@ -144,6 +144,10 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
+
+              SizedBox(
+                height: 10.0,
+              ),
               _buildSubmitButton(),
             ],
           ),
