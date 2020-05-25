@@ -93,7 +93,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     }
     _formKey.currentState.save();
     if (selectedProductIndex == null) {
-      addProduct  (
+      addProduct(
         _formData['title'],
         _formData['description'],
         _formData['image'],
@@ -115,8 +115,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                     )
                   ],
                 );
-              }
-          );
+              });
         }
       });
     } else {
@@ -144,7 +143,6 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-
               SizedBox(
                 height: 10.0,
               ),

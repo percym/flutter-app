@@ -19,7 +19,7 @@ class ProductListPage extends StatefulWidget {
 class _ProductListPageState extends State<ProductListPage> {
   @override
   initState() {
-    widget.model.fetchProducts(onlyForUser:true);
+    widget.model.fetchProducts(onlyForUser: true);
     super.initState();
   }
 
@@ -63,11 +63,11 @@ class _ProductListPageState extends State<ProductListPage> {
                   ListTile(
                     leading: CircleAvatar(
                       backgroundImage:
-                      NetworkImage(model.allProducts[index].image),
+                          NetworkImage(model.allProducts[index].image),
                     ),
                     title: Text(model.allProducts[index].title),
                     subtitle:
-                    Text('\$${model.allProducts[index].price.toString()}'),
+                        Text('\$${model.allProducts[index].price.toString()}'),
                     trailing: _buildEditButton(context, index, model),
                   ),
                   Divider()

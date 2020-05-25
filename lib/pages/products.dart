@@ -15,13 +15,14 @@ class ProductsPage extends StatefulWidget {
     return _ProductsPageState();
   }
 }
-class _ProductsPageState extends State<ProductsPage>{
+
+class _ProductsPageState extends State<ProductsPage> {
   @override
-  initState(){
+  initState() {
     widget.model.fetchProducts();
     super.initState();
-
   }
+
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
       child: Column(
@@ -44,17 +45,21 @@ class _ProductsPageState extends State<ProductsPage>{
     );
   }
 
-  Widget _buildProductsList(){
-    return ScopedModelDescendant(builder: (BuildContext context , Widget child , MainModel model){
-      Widget content = Center(child: Text('No Product found'),);
-      if(model.displayedProducts.length > 0 && !model.isLoading){
+  Widget _buildProductsList() {
+    return ScopedModelDescendant(
+        builder: (BuildContext context, Widget child, MainModel model) {
+      Widget content = Center(
+        child: Text('No Product found'),
+      );
+      if (model.displayedProducts.length > 0 && !model.isLoading) {
         content = Products();
-      }else if(model.isLoading){
+      } else if (model.isLoading) {
         content = Center(child: CircularProgressIndicator());
       }
       return content;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

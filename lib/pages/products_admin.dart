@@ -7,29 +7,29 @@ import './product_edit.dart';
 import './product_list.dart';
 
 class ProductsAdminPage extends StatelessWidget {
-  final MainModel model ;
+  final MainModel model;
 
   ProductsAdminPage(this.model);
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
-          child: Column(
-            children: <Widget>[
-              AppBar(
-                automaticallyImplyLeading: false,
-                title: Text('Choose'),
-              ),
-              ListTile(
-                leading: Icon(Icons.shop),
-                title: Text('All Products'),
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, '/products');
-                },
-              ),
-              Divider(),
-              LogoutListTile(),
-            ],
+      child: Column(
+        children: <Widget>[
+          AppBar(
+            automaticallyImplyLeading: false,
+            title: Text('Choose'),
           ),
-        );
+          ListTile(
+            leading: Icon(Icons.shop),
+            title: Text('All Products'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/products');
+            },
+          ),
+          Divider(),
+          LogoutListTile(),
+        ],
+      ),
+    );
   }
 
   @override

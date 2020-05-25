@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:map_view/map_view.dart';
+//import 'package:map_view/map_view.dart';
 
-class LocationInput extends StatefulWidget{
+class LocationInput extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _LocationInputState();
   }
-
 }
 
-class _LocationInputState extends State<LocationInput>{
+class _LocationInputState extends State<LocationInput> {
   final FocusNode _addressInputFocusNode = FocusNode();
-  
+
   @override
   void initState() {
     _addressInputFocusNode.addListener(_updateLocation);
@@ -24,18 +23,15 @@ class _LocationInputState extends State<LocationInput>{
     super.dispose();
   }
 
-  void _updateLocation(){
-
-  }
+  void _updateLocation() {}
   @override
   Widget build(BuildContext context) {
-
-    return Column(children: <Widget>[
-     TextFormField(
-       focusNode:  _addressInputFocusNode,
-
-     ),
-    ],);
+    return Column(
+      children: <Widget>[
+        TextFormField(
+          focusNode: _addressInputFocusNode,
+        ),
+      ],
+    );
   }
-
 }

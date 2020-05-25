@@ -80,8 +80,7 @@ class _AuthPageState extends State<AuthPage> {
                                     ? 'LOGIN'
                                     : 'SIGN UP'),
                                 onPressed: () =>
-                                    _submitForm(model.authenticate)
-                              );
+                                    _submitForm(model.authenticate));
                       },
                     )
                   ],
@@ -168,7 +167,8 @@ class _AuthPageState extends State<AuthPage> {
       print(_formData['email']);
       print(_formData['password']);
       print(_formData['password']);
-      final Map<String, dynamic> successInformation = await authenticate(_formData['email'], _formData['password']);
+      final Map<String, dynamic> successInformation =
+          await authenticate(_formData['email'], _formData['password']);
       if (successInformation['success']) {
 //        Navigator.pushReplacementNamed(context, '/products');
       } else {
@@ -189,12 +189,11 @@ class _AuthPageState extends State<AuthPage> {
               );
             });
       }
-
     } else {
       print(_formData['email']);
       print(_formData['password']);
-      final Map<String, dynamic> successInformation =
-          await authenticate(_formData['email'], _formData['password'],_authMode);
+      final Map<String, dynamic> successInformation = await authenticate(
+          _formData['email'], _formData['password'], _authMode);
       if (successInformation['success']) {
         Navigator.pushReplacementNamed(context, '/products');
       } else {
@@ -217,7 +216,8 @@ class _AuthPageState extends State<AuthPage> {
       }
     }
   }
-  void _buildDialogue(bool success ,String message){
+
+  void _buildDialogue(bool success, String message) {
     if (success) {
       Navigator.pushReplacementNamed(context, '/products');
     } else {
